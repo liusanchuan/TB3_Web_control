@@ -4,8 +4,8 @@ var ros;
 var batterySub;
 var cmdVelPub;
 var servo1Pub, servo2Pub, servo3Pub;
-var servo1Val, servo2Val, servo3Val;
-var servo1Last = 0, servo2Last = 0, servo3Last = 0;
+var servo1Val, servo2Val, servo3Val,servo4Val,servo4Val;
+var servo1Last = 0, servo2Last = 0, servo3Last = 0,servo4Val=0,servo5Val=0;
 var twistIntervalID;
 var servoIntervalID;
 var robot_hostname;
@@ -17,8 +17,8 @@ var max_angular_speed = 2.5;
 function initROS() {
 
     ros = new ROSLIB.Ros({
-        // url: "ws://" + robot_hostname + ":9090"
-        url: "ws://localhost:9090"
+        url: "ws://" + robot_hostname + ":9090"
+        // url: "ws://localhost:9090"
     });
 
     // Init message with zero values.
@@ -94,6 +94,20 @@ function initROS() {
     });
     batterySub.subscribe(batteryCallback);
 
+    imuSub=new ROSLIB.Topic({
+        ros :ros,
+        name:'/imu',
+        messageType:'sensor_msgs/Imu',
+        queue_length:10
+    })
+    imuSub.subscribe(imuCallback);
+    imuSub=new ROSLIB.Topic({
+        ros :ros,
+        name:'/imu',
+        messageType:'sensor_msgs/Imu',
+        queue_length:10
+    })
+    imuSub.subscribe(imuCallback);
 }
 
   
@@ -129,6 +143,26 @@ function initSliders() {
         value: 0
     });
     $('#s3-slider').on("slide", function(slideEvt) {
+        servo3Val = slideEvt.value;
+    });
+    $('#s4-slider').slider({
+        tooltip: 'show',
+        min: -90,
+        max: 90,
+        step: 1,
+        value: 0
+    });
+    $('#s4-slider').on("slide", function(slideEvt) {
+        servo4Val = slideEvt.value;
+    });
+    $('#s5-slider').slider({
+        tooltip: 'show',
+        min: -90,
+        max: 90,
+        step: 1,
+        value: 0
+    });
+    $('#s5-slider').on("slide", function(slideEvt) {
         servo3Val = slideEvt.value;
     });
 }
@@ -193,7 +227,11 @@ function initTeleopKeyboard() {
 }
 
 function batteryCallback(message) {
-    document.getElementById('batteryID').innerHTML = 'Voltage: ' + message.data.toPrecision(4) + 'V';
+    document.getElementById('batteryID').innerHTML = '电量: ' + message.data.toPrecision(4) + 'V';
+}
+function imuCallback(message){
+    console.log(message.data);
+    document.getElementById('imuID').innerHTML = '里程计信息: ' + message.data;
 }
 
 function publishTwist() {
@@ -268,8 +306,9 @@ window.onload = function () {
     video = document.getElementById('video');
     // /usb_cam/image_raw/compressed
     // video.src = "http://" + robot_hostname + ":8080/stream?topic=/camera/image_raw&type=ros_compressed";
-    video.src = "http://localhost:8080/stream?topic=/usb_cam/image_raw&type=ros_compressed";
+    // video.src = "http://"+robot_hostname+":8080/stream?topic=/usb_cam/image_raw&type=ros_compressed";
     
+    video.src = "http://"+robot_hostname+":8080/stream?topic=/camera/rgb/image_raw&type=ros_compressed";
     twistIntervalID = setInterval(() => publishTwist(), 100); // 10 hz
 
     servoIntervalID = setInterval(() => publishServos(), 100); // 10 hz
