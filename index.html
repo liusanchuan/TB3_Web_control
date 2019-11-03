@@ -36,12 +36,14 @@
 		<script src="./js/leo.js"></script>
 		<script src="./js/fullscreen.js"></script>
 		<script src="./js/servoblock.js"></script>
+		<!-- <link rel="stylesheet" type="text/css" href="https://cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css"> -->
+		<script src="./js/vue.min.js"></script>
 
 	
 
 	</head>
 
-	<body class="bg-custom">
+	<body class="bg-custom" >
 
 
 	<nav class="navbar navbar-expand-md bg-bar">
@@ -60,6 +62,7 @@
 					<img class="rounded img-fluid" src="img/nav-bar-fullscreen.svg" alt="FullScreen" style="width: 25px; height: 25px;"/>
 				</button>
 			</div>
+			
 			
 			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
 				<span class="navbar-toggler-icon"></span>
@@ -146,13 +149,41 @@
 
 
 
-	<div class="justify-content-center" style="margin-top: -70px; min-width: 100%; min-height: 100%; ">
-		<img src="" class="p-1 center-fit" alt="" id="video" style="background-size: cover"></img>
+	<div id="app" class="justify-content-center" style="margin-top: -70px; min-width: 100%; min-height: 100%; ">
+		<div v-html=""></div>
+		<img id=showVideo v-bind:src="videoUrl" class="p-1 center-fit" alt="" id="video" style="background-size: cover"></img>
+		<!-- <video autoplay webkit-playsinline class="p-1 center-fit" alt="" id="video" style="background-size: cover">      
+			<source src="" type="application/vnd.apple.mpegurl" />      
+			<p class="warning">Your browser does not support HTML5 video.</p>   
+		</video> -->
+		<div class="col-4 text-center">
+				<button type="button" class="btn btn-danger btn-sm custom-btn mt-2 ml-3" v-on:click="showVideo()">显示监控</button>
+				<button type="button" class="btn btn-danger btn-sm custom-btn mt-2 ml-3" v-on:click="closeVideo()">隐藏监控</button>
+		</div>
 	<div>
 
 
 
 	
 	</body>
+	<script type="text/javascript">
+		var video =new Vue({
+			el: '#app',
+			data:{
+				videoUrl:" ",
+				fei:"kandjianma"
+			},
+			methods:{
+				closeVideo:function(event){
+					this.videoUrl=" ";
+				},
+				showVideo:function(event){	
+					this.videoUrl = "http://"+robot_hostname+":8080/stream?topic=/usb_cam/image_raw&type=ros_compressed";
+					// this.videoUrl = "http://192.169:8080/stream?topic=/usb_cam/image_raw&type=ros_compressed";
+					// window.alert(this.videoUrl);
+				}
+			}
+		})
 
+	</script>
 </html>

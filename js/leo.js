@@ -10,6 +10,7 @@ var twistIntervalID;
 var servoIntervalID;
 var robot_hostname;
 var batterySub;
+var videoURL
 
 var max_linear_speed = 0.5;
 var max_angular_speed = 2.5;
@@ -271,9 +272,18 @@ function systemReboot(){
     systemRebootPub.publish()
 }
 
-function turnOff(){
-    systemShutdownPub.publish()
-}
+// function switchVideo(){
+//     video = document.getElementById('video');
+//     // /usb_cam/image_raw/compressed
+//     // video.src = "http://" + robot_hostname + ":8080/stream?topic=/camera/image_raw&type=ros_compressed";
+//     if(video.src==""){
+//         video.src = videoURL;
+//     }else{
+//         videoURL="";
+//     }
+// }
+
+
 
 window.onblur = function(){  
     twist.linear.x = 0;
@@ -302,13 +312,13 @@ window.onload = function () {
     initSliders();
     initTeleopKeyboard();
     createJoystick();
-
+    videoURL= "http://"+robot_hostname+":8080/stream?topic=/usb_cam/image_raw&type=ros_compressed";
     video = document.getElementById('video');
     // /usb_cam/image_raw/compressed
     // video.src = "http://" + robot_hostname + ":8080/stream?topic=/camera/image_raw&type=ros_compressed";
-    // video.src = "http://"+robot_hostname+":8080/stream?topic=/usb_cam/image_raw&type=ros_compressed";
+    video.src = videoURL;
     
-    video.src = "http://"+robot_hostname+":8080/stream?topic=/camera/rgb/image_raw&type=ros_compressed";
+    // video.src = "http://"+robot_hostname+":8080/stream?topic=/camera/rgb/image_raw&type=ros_compressed";
     twistIntervalID = setInterval(() => publishTwist(), 100); // 10 hz
 
     servoIntervalID = setInterval(() => publishServos(), 100); // 10 hz
